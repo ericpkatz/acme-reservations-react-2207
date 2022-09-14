@@ -45,6 +45,18 @@ const Reservation = conn.define('reservation', {
 Reservation.belongsTo(User);
 Reservation.belongsTo(Restaurant);
 
+Reservation.addHook('beforeCreate', async(reservation)=> {
+  const reservations = await Reservation.findAll({
+    where: {
+      userId: reservation.userId,
+      restaurantId: reservation.restaurantId
+    }
+  });
+  if(reservations.length === 5){
+    throw 'too many';
+  }
+});
+
 
 const seed = async()=> {
   const [moe, larry, lucy, beagle, arnolds, monks] = await Promise.all([
